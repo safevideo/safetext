@@ -2,7 +2,7 @@ from safetext.utils import detect_language_from_srt, detect_language_from_text
 from .languages.en import EnglishProfanityChecker
 from .languages.tr import TurkishProfanityChecker
 
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
 
 class SafeText:
