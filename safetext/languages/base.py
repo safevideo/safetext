@@ -55,7 +55,19 @@ class BaseProfanityChecker:
         return text
 
     def check(self, text):
-        """Check the text for profanity."""
+        """
+        Check the text for profanity.
+
+        Args:
+            text (str): The text to check for profanity.
+
+        Returns:
+            list: A list of profanity infos. Each profanity info is a dict with the following keys:
+                - word: The profanity word.
+                - index: The index of the profanity word in the text.
+                - start: The start index of the profanity word in the text.
+                - end: The end index of the profanity word in the text.
+        """
         return self._check(self._preprocess(text))
 
     def censor(self, text):
