@@ -45,7 +45,7 @@ class BaseProfanityChecker:
 
     def _read_words(self, filepath):
         """Read the profanity words from the given file."""
-        with open(filepath, "r") as f:
+        with open(filepath, "r", encoding="utf8") as f:
             profanity_words = f.read().splitlines()
 
         return profanity_words
