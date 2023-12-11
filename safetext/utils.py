@@ -38,8 +38,6 @@ def detect_language_from_srt(srt_file: str, use_first_n_subs: 10) -> str:
     import pysrt
 
     subs = pysrt.open(srt_file, encoding="utf-8")
-    text = " ".join(
-        [sub.text_without_tags.replace("\n", " ") for sub in subs[:use_first_n_subs]]
-    )
+    text = " ".join([sub.text_without_tags.replace("\n", " ") for sub in subs[:use_first_n_subs]])
 
     return detect_language_from_text(text)
