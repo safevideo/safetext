@@ -1,4 +1,5 @@
 import os
+import re
 
 from safetext.utils import detect_language_from_srt, detect_language_from_text
 
@@ -114,23 +115,26 @@ class ProfanityChecker:
 
     def _check(self, text):
         """Check the text for profanity."""
-        # Split the text into a list of words
-        words = text.split()
+        # Split the text into words
+        words = re.findall(r'\b\w+\b', text.lower())
 
         # Initialize a list to store the indices of profanity words
         profanity_infos = []
 
         for i, word in enumerate(words):
-            if word.lower() in self.profanity_words:
-                start_index = sum(len(w) + 1 for w in words[:i])  # +1 to account for space between words
-                end_index = start_index + len(word)
-                profanity_info = {
-                    "word": word,
-                    "index": i + 1,
-                    "start": start_index,
-                    "end": end_index,
-                }
-                profanity_infos.append(profanity_info)
+            if word in self.profanity_words:
+                # Create a regex pattern to match the word as a whole word
+                pattern = re.compile(r'\b' + re.escape(word) + r'\b', re.IGNORECASE)
+                # Check if the word is a profanity word
+                for match in pattern.finditer(text):
+                    # Add the index of the profanity word to the list
+                    profanity_info = {
+                        "word": word,
+                        "index": i + 1,
+                        "start": match.start(),
+                        "end": match.end(),
+                    }
+                    profanity_infos.append(profanity_info)
 
         return profanity_infos
 
