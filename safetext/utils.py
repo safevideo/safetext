@@ -3,8 +3,11 @@ from lingua import Language, LanguageDetectorBuilder
 LANGUAGE_TO_CODE = {
     Language.ENGLISH: "en",
     Language.TURKISH: "tr",
+    Language.GERMAN: "de",
+    Language.FRENCH: "fr",
+    Language.SPANISH: "es",
 }
-LANGUAGES = [Language.ENGLISH, Language.TURKISH]
+LANGUAGES = [Language.ENGLISH, Language.TURKISH, Language.GERMAN, Language.FRENCH, Language.SPANISH]
 DETECTOR = LanguageDetectorBuilder.from_languages(*LANGUAGES).build()
 
 

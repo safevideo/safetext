@@ -1,6 +1,9 @@
 from safetext.utils import detect_language_from_srt, detect_language_from_text
 
+from .languages.de import GermanProfanityChecker
 from .languages.en import EnglishProfanityChecker
+from .languages.es import SpanishProfanityChecker
+from .languages.pt import PortugueseProfanityChecker
 from .languages.tr import TurkishProfanityChecker
 
 __version__ = "0.0.3"
@@ -20,6 +23,12 @@ class SafeText:
             self.checker = EnglishProfanityChecker()
         elif language == "tr":
             self.checker = TurkishProfanityChecker()
+        elif language == "es":
+            self.checker = SpanishProfanityChecker()
+        elif language == "de":
+            self.checker = GermanProfanityChecker()
+        elif language == "pt":
+            self.checker = PortugueseProfanityChecker()
         else:
             raise ValueError("Language not supported")
 
