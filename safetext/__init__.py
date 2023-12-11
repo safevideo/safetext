@@ -15,8 +15,6 @@ class SafeText:
 
     def set_language(self, language: str):
         """Sets the language of the profanity checker."""
-        language = language.lower()  # Normalize the language code
-
         words_file_path = self._get_words_filepath(language)
         if not os.path.exists(words_file_path):
             raise ValueError(f"No profanity word list found for language '{language}'.")
