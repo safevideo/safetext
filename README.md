@@ -1,3 +1,14 @@
+<div align="center">
+  <p>
+    <a align="center" href="" target="_blank">
+      <img
+        width="1280"
+        src="https://github.com/safevideo/safetext/assets/44926076/9af66dde-3a93-4c5b-b802-cb31dffcb2e5"
+      >
+    </a>
+  </p>
+</div>
+
 # safetext
 
 Rule-based profanity checking tool for English and Turkish.
