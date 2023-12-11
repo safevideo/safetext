@@ -6,7 +6,7 @@ from .languages.es import SpanishProfanityChecker
 from .languages.pt import PortugueseProfanityChecker
 from .languages.tr import TurkishProfanityChecker
 
-__version__ = "0.0.3"
+__version__ = "0.0.4"
 
 
 class SafeText:
