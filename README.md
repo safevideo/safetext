@@ -7,6 +7,11 @@
       >
     </a>
   </p>
+
+[![version](https://badge.fury.io/py/safetext.svg)](https://badge.fury.io/py/safetext)
+[![downloads](https://pepy.tech/badge/safetext)](https://pepy.tech/project/safetext)
+[![license](https://img.shields.io/pypi/l/safetext)](LICENSE)
+
 </div>
 
 # safetext
