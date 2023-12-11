@@ -80,34 +80,29 @@ pip install safetext
 
 ## 📜 license
 
-safetext is available under the [MIT License](LICENSE).
+**safetext** is proudly open-source, available under the [MIT License](LICENSE).
 
 ## 📞 contact
 
-For more information, support, or questions, please contact:
-
-- **Email**: [support@safevideo.ai](mailto:support@safevideo.ai)
-- **Website**: [SafeVideo](https://safevideo.ai/)
+for inquiries or support, reach out via [email](mailto:support@safevideo.ai) or visit our website [SafeVideo](https://safevideo.ai/).
 
 ## 🤝 contribute to safetext
 
-**join us in shaping the future of content moderation!**
+join our mission in refining content moderation!
 
-safetext is an MIT-licensed open-source project. Your contributions in adding new languages, improving existing word lists, or sharing ideas help us grow stronger.
+contribute by:
 
-**How to Contribute?**
+- **adding new languages**: create a folder with the ISO 639-1 code and include a `words.txt`.
+- **enhancing word lists**: improve detection accuracy.
+- **sharing feedback**: your ideas can shape `safetext`.
 
-- **New Languages**: Add by creating a folder with the ISO 639-1 code and a `words.txt`.
-- **Enhance Lists**: Make our profanity detection more robust.
-- **Share Ideas**: Suggestions and feedback are always welcome.
-
-check our [contributing guidelines](CONTRIBUTING.md) to get started.
+see our [contributing guidelines](CONTRIBUTING.md) for more.
 
 ______________________________________________________________________
 
-## 🏆 our contributors
+## 🏆 contributors
 
-we value each contribution. meet our awesome contributors who make **safetext** better every day!
+meet our awesome contributors who make **safetext** better every day!
 
 <p align="center">
     <a href="https://github.com/safevideo/safetext/graphs/contributors">
