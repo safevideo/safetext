@@ -77,3 +77,65 @@ pip install safetext
 >>> st.language
 'tr'
 ```
+
+## 📜 license
+
+safetext is available under the [MIT License](LICENSE).
+
+## 📞 contact
+
+For more information, support, or questions, please contact:
+
+- **Email**: [support@safevideo.ai](mailto:support@safevideo.ai)
+- **Website**: [SafeVideo](https://safevideo.ai/)
+
+## 🤝 contribute to safetext
+
+**join us in shaping the future of content moderation!**
+
+safetext is an MIT-licensed open-source project. Your contributions in adding new languages, improving existing word lists, or sharing ideas help us grow stronger.
+
+**How to Contribute?**
+
+- **New Languages**: Add by creating a folder with the ISO 639-1 code and a `words.txt`.
+- **Enhance Lists**: Make our profanity detection more robust.
+- **Share Ideas**: Suggestions and feedback are always welcome.
+
+check our [contributing guidelines](CONTRIBUTING.md) to get started.
+
+______________________________________________________________________
+
+## 🏆 our contributors
+
+we value each contribution. meet our awesome contributors who make **safetext** better every day!
+
+<p align="center">
+    <a href="https://github.com/safevideo/safetext/graphs/contributors">
+      <img src="https://contrib.rocks/image?repo=safevideo/safetext" />
+    </a>
+</p>
+
+______________________________________________________________________
+
+<div align="center">
+  <b>follow us for more!</b>
+  <br>
+  <a href="https://www.linkedin.com/company/safevideo/">
+      <img
+        src="https://user-images.githubusercontent.com/44926076/278822352-30e06f9b-1915-4aed-8081-6796432daa7a.png"
+        height="32px"
+      />
+  </a>
+  <a href="https://huggingface.co/safevideo">
+      <img
+        src="https://user-images.githubusercontent.com/34196005/278877706-ed074c9c-0938-48a1-98e8-39a322faf01d.png"
+        height="32px"
+      />
+  </a>
+  <a href="https://twitter.com/safevideo_ai">
+      <img
+        src="https://user-images.githubusercontent.com/34196005/278877049-141925a9-aa1b-4730-829e-74f6d08ee8ca.png"
+        height="32px"
+      />
+  </a>
+</div>
