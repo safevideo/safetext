@@ -4,7 +4,7 @@ from typing import Dict, List
 
 from safetext.utils import detect_language_from_srt, detect_language_from_text
 
-__version__ = "0.0.4"
+__version__ = "0.0.5"
 
 
 class SafeText:
