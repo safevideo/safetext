@@ -104,7 +104,7 @@ class ProfanityChecker:
         """Get the filepath for the profanity words file."""
         import pathlib
 
-        return f"{pathlib.Path(__file__).parent.resolve()}/{self.language}/words.txt"
+        return f"{pathlib.Path(__file__).parent.resolve()}/languages/{self.language}/words.txt"
 
     @property
     def profanity_words(self):
