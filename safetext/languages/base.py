@@ -29,9 +29,7 @@ class BaseProfanityChecker:
 
         for i, word in enumerate(words):
             if word.lower() in self.profanity_words:
-                start_index = sum(
-                    len(w) + 1 for w in words[:i]
-                )  # +1 to account for space between words
+                start_index = sum(len(w) + 1 for w in words[:i])  # +1 to account for space between words
                 end_index = start_index + len(word)
                 profanity_info = {
                     "word": word,
@@ -45,7 +43,7 @@ class BaseProfanityChecker:
 
     def _read_words(self, filepath):
         """Read the profanity words from the given file."""
-        with open(filepath, "r", encoding="utf8") as f:
+        with open(filepath, encoding="utf8") as f:
             profanity_words = f.read().splitlines()
 
         return profanity_words

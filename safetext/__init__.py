@@ -1,4 +1,5 @@
 from safetext.utils import detect_language_from_srt, detect_language_from_text
+
 from .languages.en import EnglishProfanityChecker
 from .languages.tr import TurkishProfanityChecker
 
@@ -6,6 +7,7 @@ __version__ = "0.0.3"
 
 
 class SafeText:
+
     def __init__(self, language="en"):
         self.language = language
         self.checker = None
