@@ -2,7 +2,7 @@ from safetext.languages.base import BaseProfanityChecker
 
 
 class SpanishProfanityChecker(BaseProfanityChecker):
-    """Turkish profanity checker."""
+    """Spanish profanity checker."""
 
     def __init__(self):
         super().__init__(language="es")
