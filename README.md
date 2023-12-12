@@ -16,11 +16,11 @@
 
 ## 🤔 why safetext?
 
-**Expand. Detect. Protect.**
+**Detect. Filter. Protect.**
 
-- **Multi-language**: Supports five languages with ease of expansion.
-- **Automated**: Smart language detection for quick setup.
-- **Simple**: Easy to use and integrate.
+- **Effortless Profanity Management**: Instantly identify and censor profanity with just one line of code.
+- **Multilingual Capability**: Fluent in five languages, designed for easy expansion.
+- **Optimized for Content Moderation**: Perfect for efficiently moderating and cleaning up text in various applications.
 
 ## 📦 installation
 
