@@ -1,8 +1,10 @@
 import os
+import re
+from typing import Dict, List
 
 from safetext.utils import detect_language_from_srt, detect_language_from_text
 
-__version__ = "0.0.4"
+__version__ = "0.0.5"
 
 
 class SafeText:
@@ -92,81 +94,126 @@ class SafeText:
 
 
 class ProfanityChecker:
-    """Base class for profanity checkers."""
+    """
+    A class for checking and censoring profanity in text.
 
-    def __init__(self, language):
+    This class supports detection of both single-word and phrase-based profanities.
+    It requires a list of profane words and phrases to be provided in a text file.
+
+    Attributes:
+        language (str): The language code (e.g., 'en' for English).
+    """
+
+    def __init__(self, language: str):
+        """
+        Initializes the ProfanityChecker with a specified language.
+
+        Args:
+            language (str): The language code for the profanity list.
+        """
         self.language = language
+        self._profanity_words = self._load_profanity_list()
 
-    @property
-    def words_filepath(self):
-        """Get the filepath for the profanity words file."""
-        import pathlib
+    def _load_profanity_list(self) -> List[str]:
+        """
+        Loads the profanity words list from the corresponding file.
 
-        return f"{pathlib.Path(__file__).parent.resolve()}/languages/{self.language}/words.txt"
+        Returns:
+            List[str]: A list of profanity words and phrases.
+        """
+        words_filepath = os.path.join(os.path.dirname(__file__), f"languages/{self.language}/words.txt")
+        with open(words_filepath, encoding="utf8") as file:
+            return file.read().splitlines()
 
-    @property
-    def profanity_words(self):
-        """Get the profanity words for the language."""
-        if not hasattr(self, "_profanity_words"):
-            self._profanity_words = self._read_words(self.words_filepath)
+    def _find_profanities(self, text: str) -> List[Dict]:
+        """
+        Finds profanities in the given text.
 
-        return self._profanity_words
+        Args:
+            text (str): The text to scan for profanities.
 
-    def _check(self, text):
-        """Check the text for profanity."""
-        # Split the text into a list of words
-        words = text.split()
-
-        # Initialize a list to store the indices of profanity words
+        Returns:
+            List[Dict]: A list of dictionaries, each containing information about a found profanity.
+        """
         profanity_infos = []
+        lower_text = text.lower()
+        words = re.findall(r'\b\w+\b', lower_text)
 
-        for i, word in enumerate(words):
-            if word.lower() in self.profanity_words:
-                start_index = sum(len(w) + 1 for w in words[:i])  # +1 to account for space between words
-                end_index = start_index + len(word)
-                profanity_info = {
-                    "word": word,
-                    "index": i + 1,
-                    "start": start_index,
-                    "end": end_index,
-                }
-                profanity_infos.append(profanity_info)
+        for profanity in self._profanity_words:
+            if ' ' in profanity:
+                self._find_profanity_phrase(profanity, lower_text, profanity_infos)
+            else:
+                self._find_profanity_word(profanity, words, text, profanity_infos)
 
         return profanity_infos
 
-    def _read_words(self, filepath):
-        """Read the profanity words from the given file."""
-        with open(filepath, encoding="utf8") as f:
-            profanity_words = f.read().splitlines()
-
-        return profanity_words
-
-    def _preprocess(self, text):
-        """Preprocess the text before checking for profanity."""
-        return text
-
-    def check(self, text):
+    def _find_profanity_word(self, profanity: str, words: List[str], text: str, profanity_infos: List[Dict]):
         """
-        Check the text for profanity.
+        Searches for a single-word profanity in the list of words.
+
+        Args:
+            profanity (str): The profanity word to search for.
+            words (List[str]): The list of words in the text.
+            text (str): The original text.
+            profanity_infos (List[Dict]): List to append found profanities.
+        """
+        for i, word in enumerate(words):
+            if word == profanity:
+                pattern = re.compile(r'\b' + re.escape(profanity) + r'\b', re.IGNORECASE)
+                for match in pattern.finditer(text):
+                    profanity_infos.append({
+                        "word": word,
+                        "index": i + 1,
+                        "start": match.start(),
+                        "end": match.end()
+                    })
+
+    def _find_profanity_phrase(self, profanity: str, lower_text: str, profanity_infos: List[Dict]):
+        """
+        Searches for a phrase-based profanity in the text.
+
+        Args:
+            profanity (str): The profanity phrase to search for.
+            lower_text (str): The lowercased text.
+            profanity_infos (List[Dict]): List to append found profanities.
+        """
+        start = lower_text.find(profanity)
+        while start != -1:
+            end = start + len(profanity)
+            word_count_before = len(re.findall(r'\b\w+\b', lower_text[:start]))
+            profanity_infos.append({
+                "word": profanity,
+                "index": word_count_before + 1,
+                "start": start,
+                "end": end
+            })
+            start = lower_text.find(profanity, end)
+
+    def check(self, text: str) -> List[Dict]:
+        """
+        Checks the given text for profanity.
 
         Args:
             text (str): The text to check for profanity.
 
         Returns:
-            list: A list of profanity infos. Each profanity info is a dict with the following keys:
-                - word: The profanity word.
-                - index: The index of the profanity word in the text.
-                - start: The start index of the profanity word in the text.
-                - end: The end index of the profanity word in the text.
+            List[Dict]: A list of dictionaries, each containing information about a found profanity.
         """
-        return self._check(self._preprocess(text))
+        return self._find_profanities(text)
 
-    def censor(self, text):
-        """Censor the text."""
+    def censor(self, text: str) -> str:
+        """
+        Censors profanity in the given text.
+
+        Args:
+            text (str): The text to censor.
+
+        Returns:
+            str: The censored text with profanities replaced by asterisks.
+        """
         detected_profanities = self.check(text)
-        for profanity in detected_profanities:
+        for profanity in sorted(detected_profanities, key=lambda x: x['start'], reverse=True):
             start_index = profanity["start"]
             end_index = profanity["end"]
-            text = text.replace(text[start_index:end_index], "***")
-
+            text = text[:start_index] + '*' * (end_index - start_index) + text[end_index:]
         return text
