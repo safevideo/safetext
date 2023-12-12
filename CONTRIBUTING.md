@@ -6,7 +6,7 @@ we're thrilled to have you contribute to **safetext**! your efforts help enhance
 
 ### adding new languages 🌐
 
-1. **create a folder**: make a new folder in the `languages` directory with the ISO 639-1 code of the language (e.g., `fr` for French).
+1. **create a folder**: make a new folder in the `languages` directory with the [ISO 639-1 code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes#) of the language (e.g., `fr` for French).
 1. **add `words.txt`**: in this folder, add a `words.txt` file containing a list of profanity words/phrases, one per line.
 
 ### enhancing existing lists 🔍
