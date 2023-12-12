@@ -21,6 +21,7 @@
 - **Effortless Profanity Management**: Instantly identify and censor profanity with just one line of code.
 - **Multilingual Capability**: Fluent in five languages, designed for easy expansion.
 - **Optimized for Content Moderation**: Perfect for efficiently moderating and cleaning up text in various applications.
+- **Automated**: Smart language detection for quick setup.
 
 ## 📦 installation
 
