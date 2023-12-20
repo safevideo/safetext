@@ -39,22 +39,22 @@ class SafeText:
             validate_profanity (bool): Flag to enable validation of profanity detection results
                                        against ModerateContentAPI when using ProfanityChecker.
         """
-        self.language = None
-        self.checker = None
-        self.set_language(language)
-
+        self.language = language
         self.api_key = api_key or os.getenv('MODERATE_CONTENT_API_KEY')
-        self.use_api = use_api or (self.api_key is not None)
-        self.api_checker = ModerateContentAPI(self.api_key) if self.use_api else None
-
-        if self.use_api and not self.api_key:
-            raise ValueError("API key must be provided or set as an environment variable.")
-
-        if validate_profanity and self.api_key is None:
-            raise ValueError(
-                "API key must be provided or set as an environment variable to enable validation.")
-
+        self.use_api = use_api
         self.validate_profanity = validate_profanity
+
+        # Initialize the appropriate checker based on configuration
+        if self.use_api and not self.api_key:
+            raise ValueError("API key must be provided or set as an environment variable for API usage.")
+
+        if self.use_api:
+            self.checker = ModerateContentAPI(self.api_key)
+        else:
+            self.checker = ProfanityChecker(language)
+
+        if validate_profanity and not self.api_key:
+            raise ValueError("API key must be provided or set as an environment variable for validation.")
 
     def set_language(self, language: str):
         """Sets the language of the profanity checker."""
@@ -99,27 +99,31 @@ class SafeText:
 
     def check_profanity(self, text: str):
         """
-        Checks the given text for profanity using the selected method.
+        Checks the given text for profanity using the selected method. If validation is enabled, it compares
+        the results with the alternative method.
 
         Args:
             text (str): The text to check for profanity.
 
         Returns:
-            list: A list of profanity infos if using ProfanityChecker, or
-                  a list of bad words if using ModerateContentAPI.
+            list or str: Profanity check results, either as a list of profanity infos or a censored string.
         """
         if self.use_api:
-            api_results = self.api_checker.get_bad_words(text)
+            api_results = self.checker.get_bad_words(text)
             if self.validate_profanity:
                 # Perform validation against ProfanityChecker results
-                checker_results = self.checker.check(text)
-                self._validate_profanity(text, checker_results)
+                comparison_checker = ProfanityChecker(self.language)
+                checker_results = comparison_checker.check(text)
+                self._validate_profanity(text, checker_results, api_results)
             return api_results
-
-        # Use ProfanityChecker if API is not used
-        checker_results = self.checker.check(text)
-
-        return checker_results
+        else:
+            checker_results = self.checker.check(text)
+            if self.validate_profanity:
+                # Perform validation against API results
+                api_checker = ModerateContentAPI(self.api_key)
+                api_results = api_checker.get_bad_words(text)
+                self._validate_profanity(text, checker_results, api_results)
+            return checker_results
 
     def censor_profanity(self, text: str) -> str:
         """
@@ -131,25 +135,25 @@ class SafeText:
         Returns:
             str: The censored text using the selected method.
         """
-        if self.use_api:
-            return self.api_checker.censor(text)  # Using ModerateContentAPI
-        else:
-            return self.checker.censor(text)  # Using built-in ProfanityChecker
+        return self.checker.censor(text)
 
     def _auto_set_language(self, text: str):
         detected_language = detect_language_from_text(text)
         self.set_language(detected_language)
 
-    def _validate_profanity(self, text: str, checker_results: list):
+    def _validate_profanity(self, text: str, checker_results: list, api_results: list):
         """
-        Validates the profanity detection results by comparing with ModerateContentAPI results.
+        Validates the profanity detection results by comparing with the results from the alternative method.
 
         Args:
             text (str): The text that was checked.
-            checker_results (list): Results from the ProfanityChecker.
+            checker_results (list): Results from the current checker.
+            api_results (list): Results from the alternative checker.
         """
-        api_bad_words = self.api_checker.get_bad_words(text)
-        checker_bad_words = [result["word"] for result in checker_results]
+        checker_bad_words = [result["word"]
+                             for result in checker_results] if isinstance(checker_results, list) else []
+        api_bad_words = api_results if isinstance(api_results, list) else []
+
         missing_words = set(api_bad_words) - set(checker_bad_words)
         false_positives = set(checker_bad_words) - set(api_bad_words)
 
@@ -158,7 +162,7 @@ class SafeText:
         if false_positives:
             logging.info(f"Possible false detected words: {false_positives}")
         if not missing_words and not false_positives:
-            logging.info("Profanity detection results match with ModerateContentAPI.")
+            logging.info("Profanity detection results match between checkers.")
 
 
 class ProfanityChecker:
@@ -385,3 +389,6 @@ class ModerateContentAPI:
         """
         response = self._request_api(text, exclude, replace)
         return response.get('clean', '')
+
+    def check(self, text: str):
+        raise NotImplementedError("ModerateContentAPI does not support check() method.")
