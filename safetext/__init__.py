@@ -203,6 +203,25 @@ class ProfanityChecker:
         """
         return self._find_profanities(text)
 
+    def get_bad_words(self, text: str) -> List[str]:
+        """
+        Retrieves a list of bad words found in the given text.
+
+        Args:
+            text (str): The text to scan for profanities.
+
+        Returns:
+            List[str]: A list of bad words detected in the text.
+        """
+        profanity_infos = self.check(text)
+        bad_words = []
+
+        for profanity in profanity_infos:
+            bad_word = profanity["word"]
+            if bad_word not in bad_words:
+                bad_words.append(bad_word)
+        return bad_words
+
     def censor(self, text: str) -> str:
         """
         Censors profanity in the given text.
