@@ -7,7 +7,7 @@ import requests
 
 from safetext.utils import detect_language_from_srt, detect_language_from_text
 
-__version__ = "0.0.5"
+__version__ = "0.0.6"
 
 
 class SafeText:
@@ -110,7 +110,7 @@ class SafeText:
             self._validate_profanity(text, checker_results)
         return checker_results
 
-    def censor_profanity(self, text):
+    def censor_profanity(self, text: str) -> str:
         """
         Censors the given text for profanity.
 
@@ -118,11 +118,12 @@ class SafeText:
             text (str): The text to censor for profanity.
 
         Returns:
-            str: The censored text. The profanity words are replaced with asterisks.
+            str: The censored text using the selected method.
         """
-        if self.checker is None:
-            self._auto_set_language(text)
-        return self.checker.censor(text)
+        if self.use_api:
+            return self.api_checker.censor(text)  # Using ModerateContentAPI
+        else:
+            return self.checker.censor(text)  # Using built-in ProfanityChecker
 
     def _auto_set_language(self, text: str):
         detected_language = detect_language_from_text(text)
