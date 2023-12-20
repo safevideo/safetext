@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 from typing import Dict, List, Optional
@@ -39,9 +40,9 @@ class SafeText:
                                        against ModerateContentAPI when using ProfanityChecker.
         """
         self.language = language
+        self.checker = None
         if language is not None:
             self.set_language(language)
-        self.checker = ProfanityChecker(language)
         self.use_api = use_api
         self.api_checker = ModerateContentAPI(api_key) if use_api else None
         self.validate_profanity = validate_profanity and not use_api
@@ -87,23 +88,27 @@ class SafeText:
         language = detect_language_from_srt(srt_file, use_first_n_subs)
         self.set_language(language)
 
-    def check_profanity(self, text):
+    def check_profanity(self, text: str):
         """
-        Checks the given text for profanity.
+        Checks the given text for profanity using the selected method.
 
         Args:
             text (str): The text to check for profanity.
 
         Returns:
-            list: A list of profanity infos. Each profanity info is a dict with the following keys:
-                - word: The profanity word.
-                - index: The index of the profanity word in the text.
-                - start: The start index of the profanity word in the text.
-                - end: The end index of the profanity word in the text.
+            list: A list of profanity infos if using ProfanityChecker, or
+                  a list of bad words if using ModerateContentAPI.
         """
+        if self.use_api:
+            return self.api_checker.get_bad_words(text)
+
         if self.checker is None:
             self._auto_set_language(text)
-        return self.checker.check(text)
+
+        checker_results = self.checker.check(text)
+        if self.validate_profanity:
+            self._validate_profanity(text, checker_results)
+        return checker_results
 
     def censor_profanity(self, text):
         """
@@ -122,6 +127,24 @@ class SafeText:
     def _auto_set_language(self, text: str):
         detected_language = detect_language_from_text(text)
         self.set_language(detected_language)
+
+    def _validate_profanity(self, text: str, checker_results: list):
+        """
+        Validates the profanity detection results by comparing with ModerateContentAPI results.
+
+        Args:
+            text (str): The text that was checked.
+            checker_results (list): Results from the ProfanityChecker.
+        """
+        api_bad_words = self.api_checker.get_bad_words(text)
+        checker_bad_words = [result["word"] for result in checker_results]
+        missing_words = set(api_bad_words) - set(checker_bad_words)
+        false_positives = set(checker_bad_words) - set(api_bad_words)
+
+        if missing_words:
+            logging.info(f"Possible missing bad words: {missing_words}")
+        if false_positives:
+            logging.info(f"Possible false detected words: {false_positives}")
 
 
 class ProfanityChecker:
