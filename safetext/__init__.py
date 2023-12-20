@@ -43,8 +43,16 @@ class SafeText:
         self.checker = None
         if language is not None:
             self.set_language(language)
-        self.use_api = use_api
-        self.api_checker = ModerateContentAPI(api_key) if use_api else None
+        self.api_key = api_key or os.getenv('MODERATE_CONTENT_API_KEY')
+
+        if validate_profanity and not self.api_key:
+            raise ValueError(
+                "API key must be provided or set in environment to validate profanity with ModerateContentAPI."
+            )
+
+        self.use_api = use_api or (
+            validate_profanity and self.api_key is not None)  # Use API if validating profanity
+        self.api_checker = ModerateContentAPI(self.api_key) if self.use_api else None
         self.validate_profanity = validate_profanity and not use_api
 
     def set_language(self, language: str):
@@ -358,7 +366,7 @@ class ModerateContentAPI:
         response = self._request_api(text, exclude, replace)
         return response.get('bad_words', [])
 
-    def cencor(self, text: str, exclude: Optional[str] = None, replace: Optional[str] = None) -> str:
+    def censor(self, text: str, exclude: Optional[str] = None, replace: Optional[str] = None) -> str:
         """
         Analyzes the given text and returns a censored version of it.
 
