@@ -10,12 +10,41 @@ __version__ = "0.0.5"
 
 
 class SafeText:
+    """
+    A class to provide text analysis for profanity detection using either the built-in ProfanityChecker or the
+    ModerateContentAPI.
 
-    def __init__(self, language="en"):
+    Attributes:
+        language (str): The current language of the text.
+        checker (ProfanityChecker): An instance of ProfanityChecker for detecting profanity.
+        use_api (bool): Flag to use ModerateContentAPI instead of ProfanityChecker.
+        api_checker (ModerateContentAPI): An instance of ModerateContentAPI, if use_api is True.
+        compare_results (bool): Flag to enable comparison logging between the two methods.
+    """
+
+    def __init__(
+            self,
+            language: str = "en",
+            use_api: bool = False,
+            api_key: Optional[str] = None,
+            validate_profanity: bool = False):
+        """
+        Initializes the SafeText with a specified language, checker preference, and validation option.
+
+        Args:
+            language (str): The language code for the profanity list.
+            use_api (bool): Flag to use ModerateContentAPI for profanity detection.
+            api_key (str, optional): The API key for ModerateContentAPI.
+            validate_profanity (bool): Flag to enable validation of profanity detection results
+                                       against ModerateContentAPI when using ProfanityChecker.
+        """
         self.language = language
-        self.checker = None
         if language is not None:
             self.set_language(language)
+        self.checker = ProfanityChecker(language)
+        self.use_api = use_api
+        self.api_checker = ModerateContentAPI(api_key) if use_api else None
+        self.validate_profanity = validate_profanity and not use_api
 
     def set_language(self, language: str):
         """Sets the language of the profanity checker."""
