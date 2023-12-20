@@ -1,6 +1,8 @@
 import os
 import re
-from typing import Dict, List
+from typing import Dict, List, Optional
+
+import requests
 
 from safetext.utils import detect_language_from_srt, detect_language_from_text
 
@@ -217,3 +219,69 @@ class ProfanityChecker:
             end_index = profanity["end"]
             text = text[:start_index] + '*' * (end_index - start_index) + text[end_index:]
         return text
+
+
+class ModerateContentAPI:
+    """
+    A class to interact with the Moderate Content API for profanity detection.
+
+    This class facilitates the detection of bad words in text using the
+    Moderate Content API. It allows for fetching a list of bad words detected
+    in a given text.
+
+    Attributes:
+        api_key (str): The API key for accessing the Moderate Content API.
+    """
+
+    def __init__(self, api_key: Optional[str] = None):
+        """
+        Initializes the ModerateContentAPI with an optional API key.
+
+        Args:
+            api_key (str, optional): The API key for the Moderate Content API.
+                                     If not provided, it will look for an API key
+                                     in the MODERATE_CONTENT_API_KEY environment variable.
+        """
+        self.api_key = api_key or os.getenv('MODERATE_CONTENT_API_KEY')
+        if not self.api_key:
+            raise ValueError("API key must be provided or set as an environment variable.")
+
+    def _request_api(self, text: str, exclude: Optional[str] = None, replace: Optional[str] = None) -> Dict:
+        """
+        Makes a request to the Moderate Content API and returns the response.
+
+        Args:
+            text (str): The text to analyze for bad words.
+            exclude (str, optional): A comma-delimited list of words to exclude from checking.
+            replace (str, optional): A string of characters to replace bad words with.
+
+        Returns:
+            Dict: A dictionary containing the API response.
+        """
+        api_url = "https://api.moderatecontent.com/text/"
+        params = {'key': self.api_key, 'msg': text, 'exclude': exclude, 'replace': replace}
+        try:
+            response = requests.get(api_url, params=params)
+            response.raise_for_status()
+            return response.json()
+        except requests.RequestException as e:
+            # Log the exception details here
+            raise ConnectionError("Failed to connect to the Moderate Content API.") from e
+
+    def get_bad_words(self,
+                      text: str,
+                      exclude: Optional[str] = None,
+                      replace: Optional[str] = None) -> List[str]:
+        """
+        Analyzes the given text and returns a list of bad words found.
+
+        Args:
+            text (str): The text to analyze for bad words.
+            exclude (str, optional): A comma-delimited list of words to exclude from checking.
+            replace (str, optional): A string of characters to replace bad words with.
+
+        Returns:
+            List[str]: A list of bad words detected in the text.
+        """
+        response = self._request_api(text, exclude, replace)
+        return response.get('bad_words', [])
