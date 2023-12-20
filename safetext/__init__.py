@@ -285,3 +285,18 @@ class ModerateContentAPI:
         """
         response = self._request_api(text, exclude, replace)
         return response.get('bad_words', [])
+
+    def cencor(self, text: str, exclude: Optional[str] = None, replace: Optional[str] = None) -> str:
+        """
+        Analyzes the given text and returns a censored version of it.
+
+        Args:
+            text (str): The text to analyze for bad words.
+            exclude (str, optional): A comma-delimited list of words to exclude from checking.
+            replace (str, optional): A string of characters to replace bad words with.
+
+        Returns:
+            str: The censored text with bad words replaced by asterisks.
+        """
+        response = self._request_api(text, exclude, replace)
+        return response.get('clean', '')
