@@ -7,7 +7,7 @@ import requests
 
 from safetext.utils import detect_language_from_srt, detect_language_from_text
 
-__version__ = "0.0.6"
+__version__ = "0.0.7"
 
 
 class SafeText:
@@ -273,7 +273,8 @@ class ProfanityChecker:
 
         bad_words = []
         for profanity in profanity_results:
-            bad_words.append(profanity["word"])
+            if profanity["word"] not in bad_words:
+                bad_words.append(profanity["word"])
 
         return bad_words
 
