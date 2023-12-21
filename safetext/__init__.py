@@ -113,6 +113,19 @@ class SafeText:
             self._auto_set_language(text)
         return self.checker.censor(text)
 
+    def get_bad_words(self, text: str = None, profanity_results: Optional[List[Dict]] = None) -> List[str]:
+        """
+        Retrieves a list of bad words found in the given text or from provided profanity results.
+
+        Args:
+            text (str, optional): The text to scan for profanities.
+            profanity_results (Optional[List[Dict]], optional): Pre-calculated profanity results.
+
+        Returns:
+            List[str]: A list of bad words detected in the text.
+        """
+        return self.checker.get_bad_words(text, profanity_results)
+
     def _auto_set_language(self, text):
         """
         Detects the language of the given text and sets the language of the profanity checker.
@@ -240,23 +253,28 @@ class ProfanityChecker:
             })
             start = lower_text.find(profanity, end)
 
-    def get_bad_words(self, text: str) -> List[str]:
+    def get_bad_words(self, text: str = None, profanity_results: Optional[List[Dict]] = None) -> List[str]:
         """
-        Retrieves a list of bad words found in the given text.
+        Retrieves a list of bad words found in the given text or from provided profanity results.
 
         Args:
-            text (str): The text to scan for profanities.
+            text (str, optional): The text to scan for profanities.
+            profanity_results (Optional[List[Dict]], optional): Pre-calculated profanity results from
+            ProfanityChecker.check() method.
 
         Returns:
             List[str]: A list of bad words detected in the text.
         """
-        profanity_infos = self.check(text)
-        bad_words = []
+        if text is None and profanity_results is None:
+            raise ValueError("Either text or profanity_results must be provided.")
 
-        for profanity in profanity_infos:
-            bad_word = profanity["word"]
-            if bad_word not in bad_words:
-                bad_words.append(bad_word)
+        if profanity_results is None:
+            profanity_results = self.check(text)
+
+        bad_words = []
+        for profanity in profanity_results:
+            bad_words.append(profanity["word"])
+
         return bad_words
 
     def censor(self, text: str) -> str:
