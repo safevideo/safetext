@@ -273,7 +273,8 @@ class ProfanityChecker:
 
         bad_words = []
         for profanity in profanity_results:
-            bad_words.append(profanity["word"])
+            if profanity["word"] not in bad_words:
+                bad_words.append(profanity["word"])
 
         return bad_words
 
