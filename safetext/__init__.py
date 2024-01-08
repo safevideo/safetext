@@ -156,34 +156,6 @@ class SafeText:
         if not missing_words and not false_positives:
             logging.info("All good for validation!")
 
-    def load_whitelist(self) -> set:
-        """
-        Loads the whitelist of words for the current language.
-
-        Returns:
-            set: A set of words that are whitelisted.
-        """
-        whitelist_filepath = self._get_whitelist_filepath(self.language)
-        try:
-            with open(whitelist_filepath, encoding="utf8") as file:
-                return set(file.read().splitlines())
-        except FileNotFoundError:
-            logging.warning(
-                f"Whitelist file not found for language '{self.language}'. Using an empty whitelist.")
-            return set()
-
-    def _get_whitelist_filepath(self, language: str) -> str:
-        """
-        Generates the filepath for the whitelist of the specified language.
-
-        Args:
-            language (str): The language code (ISO 639-1).
-
-        Returns:
-            str: The filepath for the whitelist.
-        """
-        return os.path.join(os.path.dirname(__file__), f"languages/{language}/whitelist.txt")
-
 
 class ProfanityChecker:
     """
@@ -205,6 +177,7 @@ class ProfanityChecker:
         """
         self.language = language
         self._profanity_words = self._load_profanity_list()
+        self._whitelist = self._load_whitelist()
 
     def _load_profanity_list(self) -> List[str]:
         """
@@ -216,6 +189,23 @@ class ProfanityChecker:
         words_filepath = os.path.join(os.path.dirname(__file__), f"languages/{self.language}/words.txt")
         with open(words_filepath, encoding="utf8") as file:
             return file.read().splitlines()
+
+    def _load_whitelist(self) -> set:
+        """
+        Loads the whitelist of words for the current language.
+
+        Returns:
+            set: A set of words that are whitelisted.
+        """
+        whitelist_filepath = os.path.join(
+            os.path.dirname(__file__), f"languages/{self.language}/whitelist.txt")
+        try:
+            with open(whitelist_filepath, encoding="utf8") as file:
+                return set(file.read().splitlines())
+        except FileNotFoundError:
+            logging.warning(
+                f"Whitelist file not found for language '{self.language}'. Using an empty whitelist.")
+            return set()
 
     def _find_profanities(self, text: str) -> List[Dict]:
         """
