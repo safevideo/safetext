@@ -7,7 +7,7 @@ import requests
 
 from safetext.utils import detect_language_from_srt, detect_language_from_text
 
-__version__ = "0.0.7"
+__version__ = "0.0.8"
 
 
 class SafeText:
