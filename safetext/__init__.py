@@ -219,6 +219,11 @@ class ProfanityChecker:
         """
         profanity_infos = []
         lower_text = text.lower()
+
+        # Remove whitelisted words and phrases from the text
+        for white_item in self._whitelist:
+            lower_text = lower_text.replace(white_item.lower(), '')
+
         words = re.findall(r'\b\w+\b', lower_text)
 
         for profanity in self._profanity_words:
